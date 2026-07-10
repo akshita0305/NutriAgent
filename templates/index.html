@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}NutriAgent — AI Nutrition Coach{% endblock %}
+
+{% block content %}
+<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+<section class="hero-section">
+  <div class="hero-bg-anim"></div>
+  <div class="container-xl py-5 position-relative">
+    <div class="row align-items-center min-vh-75 py-5">
+      <div class="col-lg-6 order-lg-1 order-2 mt-4 mt-lg-0">
+        <div class="hero-badge mb-3 animate-fade-up">
+          <span class="badge-pill">🤖 Powered by IBM Watsonx.ai · Llama</span>
+        </div>
+        <h1 class="hero-title animate-fade-up" style="animation-delay:.1s">
+          Your Personal<br><span class="gradient-text">AI Nutritionist</span>
+        </h1>
+        <p class="hero-subtitle animate-fade-up" style="animation-delay:.2s">
+          Get personalised meal plans, calorie analysis, BMI insights, and
+          family diet recommendations — all in one beautiful app. Specialised
+          in Indian cuisine &amp; holistic wellness.
+        </p>
+        <div class="d-flex flex-wrap gap-3 animate-fade-up" style="animation-delay:.3s">
+          <a href="/chat" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm">
+            <i class="bi bi-chat-dots me-2"></i>Chat with NutriBot
+          </a>
+          <a href="/dashboard" class="btn btn-outline-primary btn-lg rounded-pill px-4">
+            <i class="bi bi-speedometer2 me-2"></i>My Dashboard
+          </a>
+        </div>
+        <div class="hero-stats d-flex flex-wrap gap-4 mt-4 animate-fade-up" style="animation-delay:.4s">
+          <div class="stat-item"><span class="stat-num">500+</span><span class="stat-label">Indian Recipes</span></div>
+          <div class="stat-item"><span class="stat-num">15+</span><span class="stat-label">Diet Types</span></div>
+          <div class="stat-item"><span class="stat-num">AI</span><span class="stat-label">Powered Coach</span></div>
+        </div>
+      </div>
+      <div class="col-lg-6 order-lg-2 order-1 text-center animate-float">
+        <div class="hero-illustration">
+          <div class="hero-emoji-ring">
+            <span class="emoji-orbit" style="--i:0">🥗</span>
+            <span class="emoji-orbit" style="--i:1">🍚</span>
+            <span class="emoji-orbit" style="--i:2">🥦</span>
+            <span class="emoji-orbit" style="--i:3">🍋</span>
+            <span class="emoji-orbit" style="--i:4">🥜</span>
+            <span class="emoji-orbit" style="--i:5">🫐</span>
+          </div>
+          <div class="hero-center-icon">🤖</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ──────────────────────────────────────────────────────────── -->
+<section class="features-section py-5">
+  <div class="container-xl">
+    <div class="section-header text-center mb-5">
+      <span class="section-label">Everything you need</span>
+      <h2 class="section-title">Smart Nutrition Features</h2>
+    </div>
+    <div class="row g-4">
+      {% set features = [
+        ("💬", "AI Chat Coach", "Ask anything about diet, nutrition, Indian recipes, healthy swaps, and more.", "/chat", "btn-primary"),
+        ("📊", "Nutrition Dashboard", "Track calories, macros, water intake, and your nutrition score in real-time.", "/dashboard", "btn-success"),
+        ("📅", "Meal Planner", "Generate personalised daily or weekly meal plans matching your goals and preferences.", "/meal-plan", "btn-warning"),
+        ("⚖️", "BMI & TDEE Calculator", "Know your BMI, Basal Metabolic Rate, and exact daily calorie targets.", "/bmi", "btn-info"),
+        ("👨‍👩‍👧‍👦", "Family Profiles", "Create profiles for each family member and get customised family meal plans.", "/family", "btn-danger"),
+        ("🍛", "Indian Cuisine Focused", "500+ Indian recipes with nutritional data, seasonal produce, and regional specialties.", "/chat", "btn-secondary"),
+      ] %}
+      {% for icon, title, desc, link, btn in features %}
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card h-100 animate-fade-up">
+          <div class="feature-icon">{{ icon }}</div>
+          <h5 class="feature-title mt-3 mb-2">{{ title }}</h5>
+          <p class="feature-desc text-muted mb-3">{{ desc }}</p>
+          <a href="{{ link }}" class="btn {{ btn }} btn-sm rounded-pill px-3">Explore →</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── Quick Chat ──────────────────────────────────────────────────────────── -->
+<section class="quick-chat-section py-5">
+  <div class="container-xl">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="section-header text-center mb-4">
+          <h2 class="section-title">Try a Quick Question</h2>
+          <p class="text-muted">Ask NutriBot anything — it's free and instant</p>
+        </div>
+        <div class="quick-chat-box">
+          <div id="quickChatMessages" class="quick-messages"></div>
+          <div class="quick-input d-flex gap-2 mt-3">
+            <input type="text" id="quickInput" class="form-control rounded-pill"
+              placeholder="e.g. What should I eat for breakfast to lose weight?" />
+            <button class="btn btn-primary rounded-pill px-4" id="quickSendBtn">
+              <i class="bi bi-send-fill"></i>
+            </button>
+          </div>
+          <div class="quick-chips mt-3 d-flex flex-wrap gap-2">
+            <button class="chip-btn" data-msg="Give me a healthy Indian breakfast under 300 calories">🌅 Healthy Breakfast</button>
+            <button class="chip-btn" data-msg="What are good protein sources for vegetarians in India?">💪 Veg Protein</button>
+            <button class="chip-btn" data-msg="Suggest a diabetic-friendly Indian lunch">🩺 Diabetic Lunch</button>
+            <button class="chip-btn" data-msg="How many calories in 2 chapati with sabzi?">🔢 Calorie Check</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Testimonials ─────────────────────────────────────────────────────── -->
+<section class="testimonials-section py-5">
+  <div class="container-xl">
+    <div class="section-header text-center mb-5">
+      <span class="section-label">What users say</span>
+      <h2 class="section-title">Real Results, Real People</h2>
+    </div>
+    <div class="row g-4">
+      {% set testimonials = [
+        ("Priya S.", "Lost 8 kg in 3 months!", "NutriAgent's meal plans are so practical — real Indian food, not salads! It understands my culture.", "⭐⭐⭐⭐⭐", "Mumbai"),
+        ("Rajesh K.", "Managing diabetes better", "The diabetic meal plan suggestions have helped me keep my sugar levels in check. Highly recommend!", "⭐⭐⭐⭐⭐", "Bangalore"),
+        ("Sunita M.", "Great for the whole family", "I created profiles for all 5 family members and got a weekly plan that works for everyone — even my picky 8-year-old!", "⭐⭐⭐⭐⭐", "Delhi"),
+      ] %}
+      {% for name, title, text, stars, city in testimonials %}
+      <div class="col-md-4">
+        <div class="testimonial-card h-100">
+          <div class="stars mb-2">{{ stars }}</div>
+          <h6 class="fw-bold">{{ title }}</h6>
+          <p class="text-muted mb-3 small">{{ text }}</p>
+          <div class="d-flex align-items-center gap-2">
+            <div class="avatar-circle">{{ name[0] }}</div>
+            <div>
+              <strong class="d-block small">{{ name }}</strong>
+              <span class="text-muted" style="font-size:11px">{{ city }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ──────────────────────────────────────────────────────────────── -->
+<section class="cta-section py-5">
+  <div class="container-xl">
+    <div class="cta-card text-center">
+      <h2 class="mb-3">Ready to Transform Your Nutrition?</h2>
+      <p class="text-muted mb-4">Start chatting with your AI nutrition coach — personalised, free, and powered by IBM Llama.</p>
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="/chat" class="btn btn-primary btn-lg rounded-pill px-5">
+          <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+        </a>
+        <a href="/bmi" class="btn btn-outline-primary btn-lg rounded-pill px-5">
+          <i class="bi bi-calculator me-2"></i>Check My BMI
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}

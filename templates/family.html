@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+{% block title %}Family Profiles — NutriAgent{% endblock %}
+
+{% block content %}
+<div class="container-xl py-4">
+
+  <div class="page-header mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+      <h2 class="page-title mb-1"><i class="bi bi-people me-2"></i>Family Nutrition Profiles</h2>
+      <p class="text-muted">Create profiles for each family member &amp; get a combined meal plan</p>
+    </div>
+    <button class="btn btn-primary rounded-pill px-4" id="addMemberBtn">
+      <i class="bi bi-person-plus me-2"></i>Add Member
+    </button>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- ── Members ───────────────────────────────────────────────────── -->
+    <div class="col-lg-8">
+      <div id="familyMembersGrid" class="row g-3">
+        <!-- Pre-seeded example members (removable / editable by user) -->
+        <div class="col-md-6" id="member-1">
+          <div class="family-card" data-id="1">
+            <div class="family-card-header">
+              <div class="family-avatar">👨</div>
+              <div class="flex-grow-1">
+                <h6 class="mb-0">Rajesh (Papa)</h6>
+                <small class="text-muted">Age 50 · Male · non-vegetarian</small>
+              </div>
+              <button class="btn btn-sm btn-outline-primary rounded-circle edit-member-btn me-1" data-id="1">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger rounded-circle remove-member-btn" data-id="1">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+            <div class="family-card-body">
+              <div class="d-flex gap-2 flex-wrap">
+                <span class="member-tag">📉 weight loss</span>
+                <span class="member-tag">🩺 hypertension</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6" id="member-2">
+          <div class="family-card" data-id="2">
+            <div class="family-card-header">
+              <div class="family-avatar">👩</div>
+              <div class="flex-grow-1">
+                <h6 class="mb-0">Sunita (Mummy)</h6>
+                <small class="text-muted">Age 45 · Female · vegetarian</small>
+              </div>
+              <button class="btn btn-sm btn-outline-primary rounded-circle edit-member-btn me-1" data-id="2">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger rounded-circle remove-member-btn" data-id="2">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+            <div class="family-card-body">
+              <div class="d-flex gap-2 flex-wrap">
+                <span class="member-tag">⚖️ maintenance</span>
+                <span class="member-tag">🩺 PCOD</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6" id="member-3">
+          <div class="family-card" data-id="3">
+            <div class="family-card-header">
+              <div class="family-avatar">👦</div>
+              <div class="flex-grow-1">
+                <h6 class="mb-0">Arjun (Bhai)</h6>
+                <small class="text-muted">Age 18 · Male · eggetarian</small>
+              </div>
+              <button class="btn btn-sm btn-outline-primary rounded-circle edit-member-btn me-1" data-id="3">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger rounded-circle remove-member-btn" data-id="3">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+            <div class="family-card-body">
+              <div class="d-flex gap-2 flex-wrap">
+                <span class="member-tag">💪 muscle gain</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6" id="member-4">
+          <div class="family-card" data-id="4">
+            <div class="family-card-header">
+              <div class="family-avatar">👧</div>
+              <div class="flex-grow-1">
+                <h6 class="mb-0">Priya (Didi)</h6>
+                <small class="text-muted">Age 25 · Female · vegetarian</small>
+              </div>
+              <button class="btn btn-sm btn-outline-primary rounded-circle edit-member-btn me-1" data-id="4">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger rounded-circle remove-member-btn" data-id="4">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+            <div class="family-card-body">
+              <div class="d-flex gap-2 flex-wrap">
+                <span class="member-tag">🤰 pregnancy nutrition</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <div class="mt-4 text-center">
+        <button class="btn btn-success btn-lg rounded-pill px-5" id="generateFamilyPlanBtn">
+          <i class="bi bi-magic me-2"></i>Generate Family Meal Plan
+        </button>
+      </div>
+
+      <!-- Family Plan Output -->
+      <div id="familyPlanOutput" class="d-none mt-4">
+        <div class="dash-card">
+          <div class="dash-card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-calendar-heart me-2 text-danger"></i>Family Meal Plan</span>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" id="copyFamilyPlanBtn">
+              <i class="bi bi-clipboard me-1"></i>Copy
+            </button>
+          </div>
+          <div class="dash-card-body">
+            <div id="familyPlanContent" class="plan-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="familyPlanLoading" class="d-none text-center py-4">
+        <div class="spinner-ring mx-auto mb-3"></div>
+        <p>NutriBot is creating a plan for your whole family…</p>
+      </div>
+    </div>
+
+    <!-- ── Sidebar Tips ──────────────────────────────────────────────── -->
+    <div class="col-lg-4">
+      <div class="dash-card mb-4">
+        <div class="dash-card-header"><i class="bi bi-lightbulb me-2"></i>Family Nutrition Tips</div>
+        <div class="dash-card-body">
+          <ul class="tips-list">
+            <li>🥘 <strong>One-pot meals</strong> like dal, khichdi, and sabzi can be customised for each member with minor tweaks.</li>
+            <li>🧂 <strong>Low-salt cooking</strong> benefits everyone; use amchur, lime, and herbs for flavour.</li>
+            <li>🌾 <strong>Switch to millets</strong> — jowar rotis benefit all ages from kids to seniors.</li>
+            <li>🥛 <strong>Dairy</strong> — curd and milk daily for calcium across all age groups.</li>
+            <li>🍫 <strong>Healthy desserts</strong> — date-nut ladoos, ragi halwa instead of maida sweets.</li>
+            <li>🚰 <strong>Keep water accessible</strong> for children; add sabza seeds or cucumber slices for variety.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Healthy Swap Tool -->
+      <div class="dash-card">
+        <div class="dash-card-header"><i class="bi bi-arrow-left-right me-2"></i>Healthy Food Swap</div>
+        <div class="dash-card-body">
+          <p class="text-muted small mb-3">Type any food item and get 5 healthier Indian alternatives.</p>
+          <div class="d-flex gap-2 mb-3">
+            <input type="text" id="swapInput" class="form-control form-control-sm"
+              placeholder="e.g. white rice, samosa…" />
+            <button class="btn btn-warning btn-sm rounded-pill px-3" id="swapBtn">Swap</button>
+          </div>
+          <div id="swapLoading" class="d-none text-center py-2">
+            <div class="spinner-border spinner-border-sm text-warning"></div>
+          </div>
+          <div id="swapResult" class="swap-result d-none"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Edit Member Modal ─────────────────────────────────────────────────── -->
+<div class="modal fade" id="editMemberModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Edit Family Member</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editMemberForm">
+          <input type="hidden" id="eMemberId" />
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Name / Relationship</label>
+              <input type="text" class="form-control" id="eName" required />
+            </div>
+            <div class="col-6">
+              <label class="form-label">Age</label>
+              <input type="number" class="form-control" id="eAge" min="0" max="120" required />
+            </div>
+            <div class="col-6">
+              <label class="form-label">Gender</label>
+              <select class="form-select" id="eGender">
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Diet Preference</label>
+              <select class="form-select" id="eDiet">
+                <option value="vegetarian">🌿 Vegetarian</option>
+                <option value="vegan">🌱 Vegan</option>
+                <option value="eggetarian">🥚 Eggetarian</option>
+                <option value="non-vegetarian">🍗 Non-Vegetarian</option>
+                <option value="jain">🙏 Jain</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Goal</label>
+              <select class="form-select" id="eGoal">
+                <option value="weight loss">📉 Lose Weight</option>
+                <option value="maintenance">⚖️ Maintain</option>
+                <option value="weight gain">📈 Gain Weight</option>
+                <option value="muscle gain">💪 Build Muscle</option>
+                <option value="growth">🌱 Growth (child)</option>
+                <option value="pregnancy nutrition">🤰 Pregnancy</option>
+                <option value="senior health">👴 Senior Health</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Health Conditions</label>
+              <input type="text" class="form-control" id="eHealth"
+                placeholder="e.g. diabetes, PCOD, none" />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary rounded-pill px-4" id="saveEditMemberBtn">
+          <i class="bi bi-check2 me-1"></i>Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Add Member Modal ──────────────────────────────────────────────────── -->
+<div class="modal fade" id="addMemberModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Add Family Member</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addMemberForm">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Name / Relationship</label>
+              <input type="text" class="form-control" id="mName" placeholder="e.g. Nani, or Grandma Kamala" required />
+            </div>
+            <div class="col-6">
+              <label class="form-label">Age</label>
+              <input type="number" class="form-control" id="mAge" placeholder="Years" min="0" max="120" required />
+            </div>
+            <div class="col-6">
+              <label class="form-label">Gender</label>
+              <select class="form-select" id="mGender">
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Diet Preference</label>
+              <select class="form-select" id="mDiet">
+                <option value="vegetarian">🌿 Vegetarian</option>
+                <option value="vegan">🌱 Vegan</option>
+                <option value="eggetarian">🥚 Eggetarian</option>
+                <option value="non-vegetarian">🍗 Non-Vegetarian</option>
+                <option value="jain">🙏 Jain</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Goal</label>
+              <select class="form-select" id="mGoal">
+                <option value="weight loss">📉 Lose Weight</option>
+                <option value="maintenance" selected>⚖️ Maintain</option>
+                <option value="weight gain">📈 Gain Weight</option>
+                <option value="muscle gain">💪 Build Muscle</option>
+                <option value="growth">🌱 Growth (child)</option>
+                <option value="pregnancy nutrition">🤰 Pregnancy</option>
+                <option value="senior health">👴 Senior Health</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Health Conditions</label>
+              <input type="text" class="form-control" id="mHealth"
+                placeholder="e.g. diabetes, PCOD, none" />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary rounded-pill px-4" id="saveMemberBtn">
+          <i class="bi bi-check2 me-1"></i>Add Member
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/family.js') }}"></script>
+{% endblock %}

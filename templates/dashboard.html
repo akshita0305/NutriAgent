@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — NutriAgent{% endblock %}
+
+{% block content %}
+<div class="container-xl py-4">
+
+  <!-- Header -->
+  <div class="page-header mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+      <h2 class="page-title mb-1"><i class="bi bi-speedometer2 me-2"></i>Nutrition Dashboard</h2>
+      <p class="text-muted mb-0">Track your daily nutrition and health metrics</p>
+    </div>
+    <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#profileModal">
+      <i class="bi bi-person-gear me-2"></i>Update Profile
+    </button>
+  </div>
+
+  <!-- ── Profile Quick Stats ─────────────────────────────────────────── -->
+  <div class="row g-3 mb-4" id="statsRow">
+    {% for icon, label, val_id, color in [
+      ("🔥","Daily Calories","statCalories","primary"),
+      ("💪","Protein Target","statProtein","success"),
+      ("🌾","Carbs Target","statCarbs","warning"),
+      ("🥑","Fat Target","statFat","danger"),
+    ] %}
+    <div class="col-6 col-md-3">
+      <div class="stat-card stat-{{ color }}">
+        <div class="stat-card-icon">{{ icon }}</div>
+        <div class="stat-card-value" id="{{ val_id }}">—</div>
+        <div class="stat-card-label">{{ label }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="row g-4">
+
+    <!-- ── User Profile Form ─────────────────────────────────────────── -->
+    <div class="col-lg-5">
+      <div class="dash-card h-100">
+        <div class="dash-card-header">
+          <i class="bi bi-person-circle me-2"></i>My Profile
+        </div>
+        <div class="dash-card-body">
+          <form id="profileForm">
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="profileName" placeholder="Your name" />
+              </div>
+              <div class="col-6">
+                <label class="form-label">Age</label>
+                <input type="number" class="form-control" id="profileAge" placeholder="Years" min="1" max="120" />
+              </div>
+              <div class="col-6">
+                <label class="form-label">Weight (kg)</label>
+                <input type="number" class="form-control" id="profileWeight" placeholder="kg" step="0.1" />
+              </div>
+              <div class="col-6">
+                <label class="form-label">Height (cm)</label>
+                <input type="number" class="form-control" id="profileHeight" placeholder="cm" />
+              </div>
+              <div class="col-6">
+                <label class="form-label">Gender</label>
+                <select class="form-select" id="profileGender">
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label">Activity Level</label>
+                <select class="form-select" id="profileActivity">
+                  <option value="sedentary">Sedentary (desk job)</option>
+                  <option value="light">Light (1-3x/week)</option>
+                  <option value="moderate" selected>Moderate (3-5x/week)</option>
+                  <option value="active">Active (6-7x/week)</option>
+                  <option value="very_active">Very Active (athlete)</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label">Goal</label>
+                <select class="form-select" id="profileGoal">
+                  <option value="weight_loss">Lose Weight</option>
+                  <option value="maintenance" selected>Maintain Weight</option>
+                  <option value="weight_gain">Gain Weight</option>
+                  <option value="muscle_build">Build Muscle</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label">Diet Type</label>
+                <select class="form-select" id="profileDiet">
+                  <option value="vegetarian" selected>Vegetarian</option>
+                  <option value="vegan">Vegan</option>
+                  <option value="eggetarian">Eggetarian</option>
+                  <option value="non-vegetarian">Non-Vegetarian</option>
+                  <option value="jain">Jain</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Health Conditions (optional)</label>
+                <input type="text" class="form-control" id="profileHealth"
+                  placeholder="e.g. diabetes, hypertension, PCOD" />
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                  <i class="bi bi-save me-2"></i>Save Profile &amp; Calculate
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Right Column ──────────────────────────────────────────────── -->
+    <div class="col-lg-7">
+      <div class="row g-4">
+
+        <!-- BMI Ring -->
+        <div class="col-md-6">
+          <div class="dash-card">
+            <div class="dash-card-header"><i class="bi bi-activity me-2"></i>BMI Meter</div>
+            <div class="dash-card-body text-center">
+              <div class="bmi-gauge-wrapper">
+                <svg id="bmiGaugeSvg" viewBox="0 0 200 120" class="bmi-gauge"></svg>
+                <div class="bmi-gauge-value" id="bmiGaugeValue">—</div>
+                <div class="bmi-gauge-label" id="bmiGaugeLabel">Set profile first</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Macro Rings -->
+        <div class="col-md-6">
+          <div class="dash-card">
+            <div class="dash-card-header"><i class="bi bi-pie-chart me-2"></i>Macro Split</div>
+            <div class="dash-card-body">
+              <canvas id="macroChart" height="160"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Water Tracker -->
+        <div class="col-md-6">
+          <div class="dash-card">
+            <div class="dash-card-header"><i class="bi bi-droplet-half me-2"></i>Water Intake</div>
+            <div class="dash-card-body">
+              <div class="water-tracker">
+                <div class="water-cups d-flex flex-wrap gap-2 justify-content-center" id="waterCups"></div>
+                <p class="text-center mt-2 mb-1"><span id="waterCount">0</span> / 8 glasses</p>
+                <div class="progress">
+                  <div class="progress-bar bg-info" id="waterProgress" style="width:0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nutrition Score -->
+        <div class="col-md-6">
+          <div class="dash-card">
+            <div class="dash-card-header"><i class="bi bi-star-half me-2"></i>Nutrition Score</div>
+            <div class="dash-card-body text-center">
+              <div class="score-circle" id="scoreCircle">
+                <span class="score-value" id="scoreValue">—</span>
+                <span class="score-label">/ 100</span>
+              </div>
+              <p class="text-muted small mt-2" id="scoreMessage">Complete your profile to get a score.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calorie Analyser -->
+        <div class="col-12">
+          <div class="dash-card">
+            <div class="dash-card-header"><i class="bi bi-search me-2"></i>Quick Calorie Analyser</div>
+            <div class="dash-card-body">
+              <div class="d-flex gap-2 mb-3">
+                <input type="text" id="calorieInput" class="form-control"
+                  placeholder="e.g. 2 roti with paneer sabzi and dal" />
+                <button class="btn btn-success rounded-pill px-4" id="analyseBtn">
+                  <i class="bi bi-search"></i> Analyse
+                </button>
+              </div>
+              <div id="calorieResult" class="analysis-result d-none"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

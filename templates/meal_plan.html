@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Meal Planner — NutriAgent{% endblock %}
+
+{% block content %}
+<div class="container-xl py-4">
+
+  <div class="page-header mb-4">
+    <h2 class="page-title mb-1"><i class="bi bi-calendar-week me-2"></i>AI Meal Planner</h2>
+    <p class="text-muted">Generate a personalised Indian meal plan powered by IBM Watsonx.ai</p>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- ── Planner Controls ──────────────────────────────────────────── -->
+    <div class="col-lg-4">
+      <div class="dash-card sticky-top" style="top:80px">
+        <div class="dash-card-header"><i class="bi bi-sliders me-2"></i>Planner Settings</div>
+        <div class="dash-card-body">
+          <form id="mealPlanForm">
+            <div class="mb-3">
+              <label class="form-label">Age</label>
+              <input type="number" class="form-control" id="mpAge" value="30" min="1" max="100" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Gender</label>
+              <select class="form-select" id="mpGender">
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Daily Calorie Target</label>
+              <input type="number" class="form-control" id="mpCalories" value="1800" min="1000" max="4000" step="50" />
+              <input type="range" class="form-range mt-1" id="mpCaloriesRange" min="1000" max="4000" step="50" value="1800" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Goal</label>
+              <select class="form-select" id="mpGoal">
+                <option value="weight loss">Lose Weight</option>
+                <option value="maintaining weight" selected>Maintain Weight</option>
+                <option value="gaining muscle mass">Build Muscle</option>
+                <option value="gaining weight">Gain Weight</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Diet Type</label>
+              <select class="form-select" id="mpDiet">
+                <option value="vegetarian" selected>🌿 Vegetarian</option>
+                <option value="vegan">🌱 Vegan</option>
+                <option value="eggetarian">🥚 Eggetarian</option>
+                <option value="non-vegetarian">🍗 Non-Vegetarian</option>
+                <option value="jain">🙏 Jain</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Special Requirements</label>
+              <input type="text" class="form-control" id="mpSpecial"
+                placeholder="e.g. diabetic, gluten-free, low sodium" />
+            </div>
+            <button type="submit" class="btn btn-primary w-100 rounded-pill py-2">
+              <i class="bi bi-magic me-2"></i>Generate Meal Plan
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Plan Output ───────────────────────────────────────────────── -->
+    <div class="col-lg-8">
+      <!-- Meal Template Cards when no plan yet -->
+      <div id="mealPlanPlaceholder">
+        <div class="empty-state text-center py-5">
+          <div style="font-size:4rem">🍽️</div>
+          <h4 class="mt-3">Your Meal Plan Will Appear Here</h4>
+          <p class="text-muted">Configure your preferences on the left and click Generate</p>
+        </div>
+
+        <!-- Example Meal Cards Preview -->
+        <div class="row g-3 mt-2">
+          {% for meal, icon, timing in [
+            ("Breakfast","🌅","7:00 – 9:00 AM"),
+            ("Mid-Morning Snack","🍎","10:30 – 11:00 AM"),
+            ("Lunch","🍱","12:30 – 1:30 PM"),
+            ("Evening Snack","🥜","4:00 – 5:00 PM"),
+            ("Dinner","🌙","7:00 – 8:00 PM"),
+          ] %}
+          <div class="col-md-6">
+            <div class="meal-card skeleton-card">
+              <div class="meal-card-header">
+                <span class="meal-icon">{{ icon }}</span>
+                <div>
+                  <strong>{{ meal }}</strong>
+                  <small class="d-block text-muted">{{ timing }}</small>
+                </div>
+              </div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line short"></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Generated Plan Output -->
+      <div id="mealPlanOutput" class="d-none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0"><i class="bi bi-calendar-check me-2 text-success"></i>Your Personalised Meal Plan</h5>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" id="copyPlanBtn">
+              <i class="bi bi-clipboard me-1"></i>Copy
+            </button>
+            <button class="btn btn-sm btn-outline-primary rounded-pill" id="chatAboutPlanBtn">
+              <i class="bi bi-chat-dots me-1"></i>Discuss with NutriBot
+            </button>
+          </div>
+        </div>
+        <div class="plan-content" id="planContent"></div>
+      </div>
+
+      <!-- Loading state -->
+      <div id="planLoading" class="d-none text-center py-5">
+        <div class="spinner-ring mx-auto mb-3"></div>
+        <h5>NutriBot is crafting your plan…</h5>
+        <p class="text-muted">Analysing your profile and generating an Indian meal plan with macros…</p>
+        <div class="loading-steps mt-3" id="loadingSteps">
+          <p class="loading-step active" id="step1">⚙️ Processing your preferences…</p>
+          <p class="loading-step" id="step2">🍽️ Selecting balanced Indian meals…</p>
+          <p class="loading-step" id="step3">📊 Calculating calories &amp; macros…</p>
+          <p class="loading-step" id="step4">✅ Finalising your personalised plan…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/meal_plan.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}AI Chat — NutriAgent{% endblock %}
+
+{% block content %}
+<div class="chat-page-wrapper">
+  <div class="container-xl chat-container-xl">
+    <div class="row g-3 chat-row">
+
+      <!-- ── Sidebar ───────────────────────────────────────────────────── -->
+      <div class="col-lg-3 d-none d-lg-block chat-col-sidebar">
+        <div class="chat-sidebar">
+          <div class="sidebar-profile text-center mb-4">
+            <div class="avatar-lg mx-auto mb-2">🤖</div>
+            <h6 class="mb-0 fw-bold">NutriBot</h6>
+            <small class="text-muted">Your AI Nutrition Coach</small>
+            <div class="online-badge mt-2"><span class="dot"></span> Online</div>
+          </div>
+
+          <h6 class="sidebar-section-label">Quick Topics</h6>
+          <div class="d-flex flex-column gap-2 mb-4">
+            {% for topic, icon in [
+              ("Healthy Breakfast Ideas", "☀️"),
+              ("Weight Loss Meal Plan", "📉"),
+              ("Diabetic Diet Guide", "🩺"),
+              ("Indian Protein Sources", "💪"),
+              ("Healthy Snacks", "🥜"),
+              ("Festive Food Tips", "🪔"),
+            ] %}
+            <button class="sidebar-topic-btn" data-topic="{{ topic }}">{{ icon }} {{ topic }}</button>
+            {% endfor %}
+          </div>
+
+          <h6 class="sidebar-section-label">My Profile</h6>
+          <div id="profileSummary" class="profile-summary-box">
+            <p class="text-muted small mb-2">No profile set yet.</p>
+            <a href="/dashboard" class="btn btn-outline-primary btn-sm w-100 rounded-pill">Set Profile</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Chat Window ───────────────────────────────────────────────── -->
+      <div class="col-lg-9 chat-col-main">
+        <div class="chat-container">
+
+          <!-- Header -->
+          <div class="chat-header d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <span class="avatar-sm">🤖</span>
+              <div>
+                <strong class="d-block">NutriBot</strong>
+                <span class="text-success small"><span class="dot dot-sm"></span> Active</span>
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-secondary rounded-pill" id="clearChatBtn" title="Clear chat">
+                <i class="bi bi-trash3"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary rounded-pill" id="exportChatBtn" title="Export chat">
+                <i class="bi bi-download"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+              <span class="msg-avatar">🤖</span>
+              <div class="msg-bubble">
+                <p class="mb-1">👋 <strong>Namaste! I'm NutriBot</strong>, your AI-powered nutrition coach.</p>
+                <p class="mb-1">I'm specialised in <strong>Indian cuisine</strong> and can help you with:</p>
+                <ul class="mb-1 ps-3">
+                  <li>🍽️ Personalised meal plans</li>
+                  <li>📊 Calorie &amp; macro analysis</li>
+                  <li>🥗 Healthy recipe suggestions</li>
+                  <li>⚖️ Weight management advice</li>
+                  <li>👨‍👩‍👧 Family nutrition plans</li>
+                </ul>
+                <p class="mb-0 text-muted small">What would you like help with today? 😊</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Typing Indicator -->
+          <div class="typing-indicator d-none" id="typingIndicator">
+            <span class="msg-avatar">🤖</span>
+            <div class="msg-bubble">
+              <span class="dot-anim"></span>
+              <span class="dot-anim"></span>
+              <span class="dot-anim"></span>
+            </div>
+          </div>
+
+          <!-- Quick Suggestions -->
+          <div class="chat-suggestions px-3 pb-2" id="chatSuggestions">
+            <div class="d-flex flex-wrap gap-2">
+              <button class="chip-btn small" data-msg="Create a 1500 calorie Indian meal plan for weight loss">📉 Weight Loss Plan</button>
+              <button class="chip-btn small" data-msg="What are the best foods for boosting immunity?">🛡️ Immunity Boost</button>
+              <button class="chip-btn small" data-msg="Give me a healthy Indian recipe for dal tadka">🍲 Dal Tadka Recipe</button>
+              <button class="chip-btn small" data-msg="How much water should I drink daily?">💧 Water Intake</button>
+            </div>
+          </div>
+
+          <!-- Input -->
+          <div class="chat-input-area">
+            <div class="d-flex gap-2 align-items-end">
+              <textarea id="chatInput" class="form-control chat-textarea"
+                placeholder="Ask NutriBot anything about nutrition, diet, Indian food…"
+                rows="1"></textarea>
+              <button class="btn btn-primary send-btn" id="sendBtn">
+                <i class="bi bi-send-fill"></i>
+              </button>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-1 px-1">
+              <small class="text-muted">Press Enter to send · Shift+Enter for new line</small>
+              <small class="text-muted" id="charCount">0 / 500</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}
